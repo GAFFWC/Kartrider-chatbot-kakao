@@ -1,7 +1,5 @@
-// 매타데이터 정보 조회 
-
 const axios = require("axios");
-const cheerio = require("cheerio");
+//const cheerio = require("cheerio");
 
 // 정보 조회 메뉴 블록
 const MetaDataMenu = (req, res) => {
@@ -109,26 +107,36 @@ const GetUserData = async (req, res) => {
     // 나무위키에서 해당 데이터 검색 url
     let namuWikiUrl = "https://namu.wiki/w/" + encodeURI(userDataName);
 
-    Msg.SendCard(
-        req,
-        res,
-        userDataName,
-        userDataName + "에 대한 정보입니다.",
-        imageUrl,
-        [
-            {
+    const buttons = [
+        {
+            action: "webLink",
+            label: "나무위키 - " + userDataName,
+            webLinkUrl: namuWikiUrl
+        }
+    ];
+
+    let youtubeSearchResults = await GetYoutubeSearchResults(userDataName);
+
+    if (youtubeSearchResults.status == 200) {
+        //console.log(youtubeSearchResults);
+
+        for (i = 0; i < 3; i++) {
+            const channelTitle = youtubeSearchResults.data.items[i].snippet.channelTitle;
+            const videoUrl = "https://www.youtube.com/watch?v=" + youtubeSearchResults.data.items[i].id.videoId;
+
+            buttons.push({
                 action: "webLink",
-                label: "나무위키 - " + userDataName,
-                webLinkUrl: namuWikiUrl
-            }
-        ],
-        [
-            {
-                label: "메인 메뉴로",
-                action: "text"
-            }
-        ]
-    );
+                label: "시승 리뷰 - " + channelTitle,
+                webLinkUrl: videoUrl
+            });
+        }
+    }
+    Msg.SendCard(req, res, userDataName, userDataName + "에 대한 정보입니다.", imageUrl, buttons, [
+        {
+            label: "메인 메뉴로",
+            action: "text"
+        }
+    ]);
 };
 // global json에서 해쉬 코드 찾기
 const GetDataNameEncoded = (dataType, dataName) => {
@@ -154,6 +162,31 @@ const GetDataNameEncoded = (dataType, dataName) => {
     }
     return dataNameEncoded;
 };
+const GetYoutubeSearchResults = async (DataForSearch) => {
+    const apiKey = "AIzaSyBBkRnJkkKb1MKuSsa4N0B9EZJo9P_CpwI";
+    //const url = "https://www.googleapis.com/youtube/v3/search";
+
+    const url = "https://www.googleapis.com/youtube/v3/search?key=" + apiKey + "&part=snippet&q=" + encodeURI(DataForSearch + " 리뷰");
+    let searchResults = {};
+    await axios({
+        url: url,
+        method: "GET",
+        headers: {}
+    })
+        .then((response) => {
+            //console.log(response);
+            searchResults.status = response.status;
+            searchResults.data = response.data;
+        })
+        .catch((error) => {
+            //onsole.log(error);
+            //searchResults.status = error.response.status;
+        });
+
+    return searchResults;
+    const videoUrl = "https://www.youtube.com/watch?v=PxWAot5Lbe8";
+};
+
 module.exports = {
     MetaDataMenu: MetaDataMenu,
     AskDataName: AskDataName,
