@@ -1,3 +1,5 @@
+// 매타데이터 정보 조회 
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 
