@@ -1,5 +1,4 @@
 // DB의 각 attribute 별 getter, setter
-// 딱히 필요 없을수도..
 
 const SetUserInfo = async (req) => {
     const userId = req.body.userRequest.user.id;
