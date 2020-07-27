@@ -1,5 +1,4 @@
-// 라이더 통계 진입 -> 라이더 명 물어보기
-// *** 블록 id로 연결하면 라우팅 빼도되는(빼야되는) 부분 있는듯
+// 라이더 정보 조회
 
 const { response } = require("express");
 const axios = require("axios");
