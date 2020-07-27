@@ -73,9 +73,9 @@ global.Builder = require("./module/block.js");
 global.DataBase = require("./module/db.js");
 global.track = require("./data/track.json");
 global.kart = require("./data/kart.json");
-global.pet = require("./data/pet.json");
+//global.pet = require("./data/pet.json");
 global.character = require("./data/character.json");
-global.flyingPet = require("./data/flyingPet.json");
+//global.flyingPet = require("./data/flyingPet.json");
 /********************************
  기본 헤더 설정
 ********************************/
