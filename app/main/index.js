@@ -6,7 +6,7 @@ const axios = require("axios");
 router.use(async (req, res, next) => {
     DataBase.SetUserInfo(req);
 
-    if (req.body.userRequest.utterance == "메인 메뉴로" || req.body.intent.id == Block.welcome) {
+    if (req.body.userRequest.utterance == "메인 메뉴로" || req.body.intent.id == Block.welcome || req.body.intent.id == Block.mainMenu) {
         // 메인 메뉴 블록으로
         console.log("메인 메뉴로");
         Builder.MainMenuBlock(req, res);
