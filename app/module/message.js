@@ -19,11 +19,13 @@ const AppendButton = (message, items) => {
 
     message.template.quickReplies = [];
 
+    // 버튼 모두 읽어서 형식에 맞게 붙여주기
     for (item of items) {
         const button = {
             label: item.label
         };
 
+        // 딱히 메세지 지정 안해주었으면 버튼 라벨로 지정
         if (item.action == "text") {
             button.action = "message";
             button.messageText = item.text ? item.text : item.label;
@@ -78,6 +80,7 @@ const Send = (req, res, description, quickButton, imageUrl, button) => {
     //console.log("Message -> Send");
     //console.log(message.template.quickReplies);
 
+    // 이미지 url도 넘어온 경우
     if (imageUrl) {
         message.template.outputs.push({
             simpleImage: {
@@ -87,6 +90,7 @@ const Send = (req, res, description, quickButton, imageUrl, button) => {
         });
     }
 
+    // 퀵버튼 넘어온 경우
     if (button) {
         message.template.outputs.push(button);
     }
