@@ -1,7 +1,6 @@
-//const request = require("request-promise-native");
 const Info = require("../main/info.js");
 const MetaData = require("../main/metadata.js");
-//const Metadata = require("../main/metadata.js");
+
 // title, subject를 기준으로 다른 파일로 넘김
 const RoutingBlock = (req, res, title, subject) => {
     const ErrorText = "잘못된 접근입니다. 메인메뉴로 돌아갑니다.";
