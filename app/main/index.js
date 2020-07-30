@@ -3,10 +3,11 @@ const router = express.Router();
 const querystring = require("querystring");
 const axios = require("axios");
 
+// 발화 처음 받기
 router.use(async (req, res, next) => {
-    DataBase.SetUserInfo(req);
+    DataBase.CreateUserIfNotExist(req);
 
-    if (req.body.userRequest.utterance == "메인 메뉴로" || req.body.intent.id == Block.welcome || req.body.intent.id == Block.mainMenu) {
+    if (req.body.userRequest.utterance == "메인 메뉴로" || req.body.intent.id == Block.welcome) {
         // 메인 메뉴 블록으로
         console.log("메인 메뉴로");
         Builder.MainMenuBlock(req, res);
@@ -15,23 +16,25 @@ router.use(async (req, res, next) => {
 
     // 라우팅 지정되서 들어온 경우 -> 퀵버튼 눌렀다
     if (req.body.action.clientExtra.title && req.body.action.clientExtra.subject) {
-        console.log(req.body.action.clientExtra);
+        //console.log(req.body.action.clientExtra);
         req.body.userRequest.route = {
             title: req.body.action.clientExtra.title,
             subject: req.body.action.clientExtra.subject
         };
-        DataBase.SetUserTrace(req);
+        DataBase.SetUserInfo(req, {
+            userTrace: req.body.userRequest.route
+        });
     } else {
         // 버튼 눌렀던 것 아니면 DB에 저장된 마지막 라우트를 읽어옴
-        let userTrace = await DataBase.GetUserTrace(req);
-
+        let userTrace = await DataBase.GetUserInfo(req, "userTrace");
+        console.log(2222222 + userTrace);
         if (userTrace) {
             req.body.userRequest.route = userTrace;
         }
     }
     next();
 });
-
+// 라우팅으로 표기된 발화들 보내주기
 router.use(async (req, res, next) => {
     //console.log(req.body.userRequest.route);
 

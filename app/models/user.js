@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             userTrace: {
                 field: "user_trace",
-                comment: "유저 라우팅 ",
+                comment: "유저 블록",
                 type: DataTypes.STRING,
                 allowNull: true
             }

@@ -1,6 +1,7 @@
+//const request = require("request-promise-native");
 const Info = require("../main/info.js");
 const MetaData = require("../main/metadata.js");
-
+//const Metadata = require("../main/metadata.js");
 // title, subject를 기준으로 다른 파일로 넘김
 const RoutingBlock = (req, res, title, subject) => {
     const ErrorText = "잘못된 접근입니다. 메인메뉴로 돌아갑니다.";
@@ -41,10 +42,10 @@ const RoutingBlock = (req, res, title, subject) => {
 const MainMenuBlock = (req, res) => {
     const mainText = "메인 메뉴 중 원하는 기능을 눌러주세요.\n\n<라이더 통계> : 특정 라이더의 정보 및 통계\n<정보 조회> : 카트라이더 게임 내 카트바디, 캐릭터, 트랙에 대한 정보 조회";
 
-    req.body.userRequest.route = {};
-
     // route 초기화
-    DataBase.SetUserTrace(req);
+    DataBase.SetUserInfo(req, {
+        userTrace: {}
+    });
 
     Msg.Send(req, res, mainText, [
         {

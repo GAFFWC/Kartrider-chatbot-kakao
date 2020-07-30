@@ -1,4 +1,5 @@
-// 라이더 정보 조회
+// 라이더 통계 진입 -> 라이더 명 물어보기
+// *** 블록 id로 연결하면 라우팅 빼도되는(빼야되는) 부분 있는듯
 
 const { response } = require("express");
 const axios = require("axios");
@@ -72,11 +73,16 @@ const AskRiderName = async (req, res) => {
         }
     ]);
 
-    DataBase.SetUserTrace(req);
+    DataBase.SetUserInfo(req, {
+        userTrace: {
+            title: "Info",
+            subject: "RiderInfoMenu"
+        }
+    });
 };
 // 입력받은 라이더 명을 통해 api 요청 후 처리
 const RiderInfoMenu = async (req, res) => {
-    let userLastRoute = await DataBase.GetUserTrace(req);
+    let userLastRoute = await DataBase.GetUserInfo(req, "userTrace");
 
     // 라우트 조회 에러
     if (!userLastRoute || userLastRoute.title != req.body.userRequest.route.title || userLastRoute.subject != req.body.userRequest.route.subject) {
@@ -87,8 +93,9 @@ const RiderInfoMenu = async (req, res) => {
                 action: "text"
             }
         ]);
-        req.body.userRequest.route = {};
-        DataBase.SetUserTrace(req);
+        DataBase.SetUserInfo(req, {
+            userTrace: {}
+        });
         return;
     }
 
@@ -115,24 +122,23 @@ const RiderInfoMenu = async (req, res) => {
                     action: "text"
                 }
             ]);
-            req.body.userRequest.route = {};
-            DataBase.SetUserTrace(req);
+            DataBase.SetUserInfo(req, {
+                userTrace: {}
+            });
         }
         return;
     }
 
     // 라이더 조회 성공
 
-    req.body.userRequest.accessId = checkApi.accessId;
-    req.body.userRequest.riderName = riderName;
-    req.body.userRequest.route = {
-        title: "Info",
-        subject: "GetGameType"
-    };
-
-    DataBase.SetUserRiderName(req);
-    DataBase.SetUserAccessId(req);
-    DataBase.SetUserTrace(req);
+    DataBase.SetUserInfo(req, {
+        userAccessId: checkApi.accessId,
+        userRiderName: riderName,
+        userTrace: {
+            title: "Info",
+            subject: "GetGameType"
+        }
+    });
 
     Msg.Send(req, res, "현재 제공되는 기능은 아래와 같습니다. 원하는 기능의 버튼을 눌러주세요.", [
         {
@@ -198,8 +204,9 @@ const GetGameType = (req, res) => {
 const GetGameAmount = (req, res) => {
     // 전 블록에서 게임 유형 안가져 온 경우
     if (!req.body.action.clientExtra.gameType) {
-        req.body.userRequest.route = {};
-        DataBase.SetUserTrace(req);
+        DataBase.SetUserInfo(req, {
+            userTrace: {}
+        });
         Msg.Send(req, res, "잘못된 접근입니다.", [
             {
                 label: "메인 메뉴로",
@@ -210,16 +217,14 @@ const GetGameAmount = (req, res) => {
     }
 
     // 게임 유형 db에 저장
-    req.body.userRequest.gameType = req.body.action.clientExtra.gameType;
-    DataBase.SetUserGameType(req);
-
     // 입력 정상적으로 받을 때까지 돌기위해 라우팅 저장
-    req.body.userRequest.route = {
-        title: "Info",
-        subject: "GetGameResults"
-    };
-
-    DataBase.SetUserTrace(req);
+    DataBase.SetUserInfo(req, {
+        userGameType: req.body.action.clientExtra.gameType,
+        userTrace: {
+            title: "Info",
+            subject: "GetGameResults"
+        }
+    });
 
     Msg.Send(req, res, "최근 1 ~ 500건까지 조회가 가능합니다. 원하는 게임 수를 입력해주세요. 플레이한 총 게임 수가 입력하신 게임 수보다 적을 경우 총 게임 수 까지만 조회합니다. 또한 500이 넘는 숫자를 입력하신 경우 최대 500건까지만 조회합니다.", [
         {
@@ -249,8 +254,9 @@ const GetGameResults = async (req, res) => {
     if (gameAmount > 500) gameAmount = 500;
 
     // 발화 숫자 (게임 수)를 req에 실어서 db로 저장
-    req.body.userRequest.gameAmount = gameAmount;
-    DataBase.SetUserGameAmount(req);
+    DataBase.SetUserInfo(req, {
+        userGameAmount: gameAmount
+    });
 
     // 게임 결과 api 요청
     gameResults = await RequestGameResults(req, res);
@@ -263,8 +269,9 @@ const GetGameResults = async (req, res) => {
                 action: "text"
             }
         ]);
-        req.body.userRequest.route = {};
-        DataBase.SetUserTrace(req);
+        DataBase.SetUserInfo(req, {
+            userTrace: {}
+        });
         return;
     }
 
@@ -379,8 +386,9 @@ const RequestGameResults = async (req, res) => {
                 action: "text"
             }
         ]);
-        req.body.userRequest.route = {};
-        DataBase.SetUserTrace(req);
+        DataBase.SetUserInfo(req, {
+            userTrace: {}
+        });
         return;
     }
 
